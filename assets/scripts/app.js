@@ -21,7 +21,7 @@ let lon, lat;
 
 function getLonLat() { //Function to get LON and LAT from OpenWeather API
     const city = document.querySelector('.search input').value;
-    const lonLatUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${apiKey}`;
+    const lonLatUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${apiKey}`;
 
     
     return fetch(lonLatUrl).then((response) => {
