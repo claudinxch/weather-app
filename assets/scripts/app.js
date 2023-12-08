@@ -17,12 +17,12 @@ const humidity = document.querySelector('.humidity');
 
 //api
 const apiKey = '44848df7386a246f125b780686932d52';
+const weatherApiBaseUrl = 'https://api.openweathermap.org/data/2.5';
 let lon, lat;
 
 function getLonLat() { //Function to get LON and LAT from OpenWeather API
     const city = document.querySelector('.search input').value;
-    const lonLatUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${apiKey}`;
-
+    const lonLatUrl = `${weatherApiBaseUrl}/geo/1.0/direct?q=${city}&limit=5&appid=${apiKey}`;
     
     return fetch(lonLatUrl).then((response) => {
         if (!response.ok) {
@@ -46,7 +46,7 @@ function getLonLat() { //Function to get LON and LAT from OpenWeather API
 function loadWeatherData() {
     showLoader();
         getLonLat().then(() => {
-            const weatherDataURL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
+            const weatherDataURL = `${weatherApiBaseUrl}/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
 
             return fetch(weatherDataURL).then(response => {
                 if(!response.ok) {
