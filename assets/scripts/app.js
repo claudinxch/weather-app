@@ -17,12 +17,37 @@ const humidity = document.querySelector('.humidity');
 
 //api
 const apiKey = '44848df7386a246f125b780686932d52';
-const weatherApiBaseUrl = 'https://api.openweathermap.org/data/2.5';
 let lon, lat;
 
-function getLonLat() { //Function to get LON and LAT from OpenWeather API
+const opencageApiKey = 'd90f52a3796d443ca735a2e7fc7c0ae8'; // Substitua pelo seu token do OpenCage
+
+function getLonLat() {
     const city = document.querySelector('.search input').value;
-    const lonLatUrl = `${weatherApiBaseUrl}/geo/1.0/direct?q=${city}&limit=5&appid=${apiKey}`;
+    const geocodingUrl = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(city)}&key=${opencageApiKey}`;
+
+    return fetch(geocodingUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const geometry = data.results[0].geometry;
+            lon = geometry.lng;
+            lat = geometry.lat;
+            errorMessage();
+        })
+        .catch(error => {
+            console.log(`Fetch error: ${error}`);
+            errorMessage(city);
+        });
+}
+
+/*function getLonLat() { //Function to get LON and LAT from OpenWeather API
+    const city = document.querySelector('.search input').value;
+    const lonLatUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${apiKey}`;
+
     
     return fetch(lonLatUrl).then((response) => {
         if (!response.ok) {
@@ -36,17 +61,17 @@ function getLonLat() { //Function to get LON and LAT from OpenWeather API
         errorMessage();
     }).catch((error) => {
         console.log(`Fetch error: ${error}`);
-        errorMessage(searchInput.value);
-        /*alert('Cidade inválida.');
+        errorMessage(city);
+        alert('Cidade inválida.');
          image.src = './assets/images/not found.jpg';
-         temperature.innerHTML = 'Não encontrado';*/
+         temperature.innerHTML = 'Não encontrado';
     });
-}
+}*/
 
 function loadWeatherData() {
     showLoader();
         getLonLat().then(() => {
-            const weatherDataURL = `${weatherApiBaseUrl}/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
+            const weatherDataURL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
 
             return fetch(weatherDataURL).then(response => {
                 if(!response.ok) {
@@ -79,6 +104,45 @@ function loadWeatherData() {
             });
         })
 }
+
+
+/*function loadWeatherData() {
+    showLoader();
+
+            const weatherDataURL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
+
+            return fetch(weatherDataURL).then(response => {
+                if(!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                return response.json();
+            }).then(json => {
+                console.log(json);
+
+                getWeatherType(json.weather[0].main);
+
+                const windSpeedInKm = (json.wind.speed) * 3.6;
+
+                temperature.innerHTML = `${parseInt(json.main.temp)}<span>ºC</span>`;
+                maxTemp.innerHTML = `Max: ${parseInt(json.main.temp_max)}<span>ºC</span>`;
+                minTemp.innerHTML = `Min: ${parseInt(json.main.temp_min)}<span>ºC</span>`;
+                wind.innerHTML = `Vento: ${windSpeedInKm.toFixed(1)} KM/H`;
+                humidity.innerHTML = `Humidade: ${json.main.humidity}%`;
+
+                weatherInformationAnimation();
+                hideLoader();
+
+            }).catch((error) => {
+                console.log(`Fetch error: ${error}`);
+
+                weatherInformationAnimation();
+                hideLoader();
+
+            });
+        
+}*/
+
 
 function weatherInformationAnimation() {
     content.style.height = '487px';
